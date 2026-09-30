@@ -211,8 +211,22 @@
     "title": "End of Month Test"
   }
 ];
+  // Split ranges into weekday-only stretches so the agenda also excludes weekends.
+  const weekdayEvents = events.flatMap(event => {
+    const result = [];
+    const [year, month, day] = event.start.split('-').map(Number);
+    let run = null;
+    for (let date = new Date(year, month - 1, day); ; date.setDate(date.getDate() + 1)) {
+      const key = [date.getFullYear(), String(date.getMonth()+1).padStart(2,'0'), String(date.getDate()).padStart(2,'0')].join('-');
+      if (key > event.end) break;
+      if (date.getDay() === 0 || date.getDay() === 6) { run = null; continue; }
+      if (!run) { run = {...event, start: key, end: key}; result.push(run); }
+      else run.end = key;
+    }
+    return result;
+  });
   const dateKey = date => [date.getFullYear(), String(date.getMonth()+1).padStart(2,'0'), String(date.getDate()).padStart(2,'0')].join('-');
-  const onDate = date => events.filter(event => event.start <= dateKey(date) && event.end >= dateKey(date));
+  const onDate = date => weekdayEvents.filter(event => event.start <= dateKey(date) && event.end >= dateKey(date));
   const now = new Date();
   let selected = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   let view = new Date(selected.getFullYear(), selected.getMonth(), 1);
@@ -244,7 +258,7 @@
     agenda.replaceChildren();
     const heading = document.createElement('h2'); heading.textContent = 'Events this month'; agenda.append(heading);
     const start = dateKey(view), end = dateKey(new Date(view.getFullYear(),view.getMonth()+1,0));
-    const monthly = events.filter(event => event.start <= end && event.end >= start).sort((a,b)=>a.start.localeCompare(b.start));
+    const monthly = weekdayEvents.filter(event => event.start <= end && event.end >= start).sort((a,b)=>a.start.localeCompare(b.start));
     for (const event of monthly) { const p = document.createElement('p'); p.textContent = (event.start === event.end ? event.start : event.start + ' – ' + event.end) + ' · ' + event.title; agenda.append(p); }
     if (!monthly.length) { const p = document.createElement('p'); p.textContent = 'No events listed for this month.'; agenda.append(p); }
     days.replaceChildren();
