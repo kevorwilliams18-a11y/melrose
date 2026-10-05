@@ -227,6 +227,33 @@
   });
   const dateKey = date => [date.getFullYear(), String(date.getMonth()+1).padStart(2,'0'), String(date.getDate()).padStart(2,'0')].join('-');
   const onDate = date => weekdayEvents.filter(event => event.start <= dateKey(date) && event.end >= dateKey(date));
+
+  // Homepage and calendar share the same weekday-filtered event list.
+  const home = document.querySelector('#home-events');
+  if (home) {
+    const parts = new Intl.DateTimeFormat('en-US', {timeZone:'America/Jamaica',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+    const part = type => parts.find(p => p.type === type).value;
+    const today = part('year') + '-' + part('month') + '-' + part('day');
+    const upcoming = weekdayEvents.filter(e => e.end >= today).sort((a,b)=>a.start.localeCompare(b.start));
+    const formatDate = key => { const [y,m,d]=key.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); };
+    const fill = (id, items) => {
+      const container = document.querySelector(id); container.replaceChildren();
+      if (!items.length) { const p=document.createElement('p'); p.textContent='No further events are listed. Check the calendar for updates.'; container.append(p); }
+      for (const e of items) {
+        const article=document.createElement('article'); article.className='item';
+        const badge=document.createElement('div'); badge.className='date';
+        const day=document.createElement('b'); day.textContent=String(Number(e.start.slice(8)));
+        badge.append(day,document.createTextNode(new Date(e.start+'T12:00:00').toLocaleDateString('en',{month:'short'}).toUpperCase()));
+        const body=document.createElement('div'), title=document.createElement('h3'), link=document.createElement('a');
+        link.href='calendar.html'; link.textContent=e.title; title.append(link);
+        const dates=document.createElement('p'); dates.textContent=formatDate(e.start)+(e.start!==e.end?' – '+formatDate(e.end):'')+(e.start<=today && e.end>=today?' · Happening today':'');
+        body.append(title,dates); article.append(badge,body); container.append(article);
+      }
+    };
+    fill('#home-next',upcoming.slice(0,3)); fill('#home-later',upcoming.slice(3,6));
+    return;
+  }
+
   const now = new Date();
   let selected = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   let view = new Date(selected.getFullYear(), selected.getMonth(), 1);
