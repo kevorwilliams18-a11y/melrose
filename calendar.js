@@ -254,7 +254,9 @@
     return;
   }
 
-  const now = new Date();
+  const jamaicaParts = new Intl.DateTimeFormat('en-US',{timeZone:'America/Jamaica',year:'numeric',month:'numeric',day:'numeric'}).formatToParts(new Date());
+  const jp = type => Number(jamaicaParts.find(p => p.type === type).value);
+  const now = new Date(jp('year'),jp('month')-1,jp('day'));
   let selected = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   let view = new Date(selected.getFullYear(), selected.getMonth(), 1);
   const days = document.querySelector('#days');
