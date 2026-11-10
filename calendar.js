@@ -251,6 +251,66 @@
       }
     };
     fill('#home-next',upcoming.slice(0,3)); fill('#home-later',upcoming.slice(3,6));
+
+    // Homepage notice uses the same school events and Jamaica date as the agenda.
+    if (/\/(?:index\.html)?$/.test(location.pathname)) {
+      const dialog = document.createElement('dialog');
+      dialog.id = 'school-events-notice';
+      dialog.setAttribute('aria-labelledby', 'school-events-notice-title');
+      dialog.innerHTML = '<button type="button" class="notice-close" aria-label="Close school events" autofocus>×</button><p class="notice-kicker">School Calendar</p><h2 id="school-events-notice-title">This Week at Melrose</h2><p class="notice-range"></p><div class="notice-today"><h3>Today</h3><div></div></div><div class="notice-week"><h3>Next Seven Days</h3><div></div></div><a class="notice-calendar" href="calendar.html">View the Full Calendar →</a>';
+      const [y,m,d] = today.split('-').map(Number);
+      const tomorrow = dateKey(new Date(y,m-1,d+1));
+      const lastDay = dateKey(new Date(y,m-1,d+7));
+      dialog.querySelector('.notice-range').textContent = formatDate(today) + ' – ' + formatDate(lastDay);
+      function noticeList(container, items, empty) {
+        if (!items.length) { const p=document.createElement('p'); p.textContent=empty; container.append(p); return; }
+        const list=document.createElement('ul');
+        for (const e of items) {
+          const li=document.createElement('li'), title=document.createElement('strong'), dates=document.createElement('span');
+          title.textContent=e.title;
+          dates.textContent=formatDate(e.start)+(e.start!==e.end?' – '+formatDate(e.end):'');
+          li.append(title,dates); list.append(li);
+        }
+        container.append(list);
+      }
+      noticeList(dialog.querySelector('.notice-today>div'),weekdayEvents.filter(e=>e.start<=today&&e.end>=today),'No events are listed for today.');
+      noticeList(dialog.querySelector('.notice-week>div'),weekdayEvents.filter(e=>e.start<=lastDay&&e.end>=tomorrow).sort((a,b)=>a.start.localeCompare(b.start)),'No events are listed for the next seven days. Please check the full calendar for later dates.');
+      const launcher=document.createElement('button');
+      launcher.type='button'; launcher.className='events-notice-launcher'; launcher.textContent="This Week’s Events";
+      launcher.setAttribute('aria-haspopup','dialog');
+      launcher.setAttribute('aria-controls',dialog.id);
+      home.before(launcher);
+      const style=document.createElement('style');
+      style.textContent=`
+        #school-events-notice{box-sizing:border-box;border:1px solid #cfdbeb;border-top:6px solid #ffd429;border-radius:16px;background:#fff;color:#102a4c;width:min(560px,calc(100vw - 32px));max-height:85dvh;overflow:auto;padding:30px;box-shadow:0 20px 70px #0b3d9140}
+        #school-events-notice::backdrop{background:#071b3399}
+        #school-events-notice h2{font:700 clamp(26px,5vw,34px)/1.2 Georgia,serif;letter-spacing:0;margin:8px 35px 12px 0;color:#0b3d91}
+        #school-events-notice h3{font:700 20px/1.4 Arial,sans-serif;margin:0 0 10px;color:#0b3d91}
+        #school-events-notice p{font:16px/1.6 Arial,sans-serif;margin:0 0 12px}
+        #school-events-notice .notice-kicker{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#155fc1}
+        #school-events-notice .notice-range{color:#506886;margin-bottom:22px}
+        #school-events-notice .notice-today,#school-events-notice .notice-week{padding:18px;background:#e9f2ff;border-radius:10px;margin:14px 0}
+        #school-events-notice ul{list-style:none;padding:0;margin:0}
+        #school-events-notice li+li{border-top:1px solid #cfdbeb;padding-top:12px;margin-top:12px}
+        #school-events-notice li strong{display:block;font:700 17px/1.5 Arial,sans-serif}
+        #school-events-notice li span{display:block;font:14px/1.5 Arial,sans-serif;color:#506886;margin-top:4px}
+        #school-events-notice .notice-close{position:absolute;top:13px;right:13px;width:44px;height:44px;border:0;border-radius:50%;background:#e9f2ff;color:#0b3d91;font:28px Arial;cursor:pointer}
+        #school-events-notice .notice-calendar,.events-notice-launcher{display:inline-block;padding:13px 18px;border:0;border-radius:8px;background:#155fc1;color:#fff;font:700 16px/1.4 Arial,sans-serif;text-decoration:none;cursor:pointer}
+        .events-notice-launcher{margin:0 0 22px}
+        #school-events-notice :focus-visible,.events-notice-launcher:focus-visible{outline:3px solid #0b3d91;outline-offset:4px}
+        body.events-notice-open{overflow:hidden}
+        @media(prefers-reduced-motion:no-preference){#school-events-notice[open]{animation:events-notice-in .2s ease-out}@keyframes events-notice-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}}
+      `;
+      document.head.append(style); document.body.append(dialog);
+      let previousFocus;
+      function openNotice(){if(dialog.open||typeof dialog.showModal!=='function')return;previousFocus=document.activeElement;dialog.showModal();document.body.classList.add('events-notice-open');}
+      launcher.addEventListener('click',openNotice);
+      dialog.querySelector('.notice-close').addEventListener('click',()=>dialog.close());
+      dialog.addEventListener('close',()=>{document.body.classList.remove('events-notice-open');try{sessionStorage.setItem('melrose-events-notice-'+today,'closed');}catch{}if(previousFocus instanceof HTMLElement && previousFocus!==document.body)previousFocus.focus({preventScroll:true});});
+      let dismissed=false;try{dismissed=sessionStorage.getItem('melrose-events-notice-'+today)==='closed';}catch{}
+      if(!dismissed)openNotice();
+    }
+
     return;
   }
 
