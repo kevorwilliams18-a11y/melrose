@@ -45,3 +45,11 @@ main>h2,.school-section>h2,.purpose-title,.board-roster>h2{font:800 clamp(26px,3
 .review-footer h2{font-size:18px!important;font-family:Arial,sans-serif;letter-spacing:0!important}
 .review-footer .school-brand{font-size:20px!important}
 @media(max-width:700px){.school-jump a{font-size:17px!important;padding:10px 12px}.chairwoman-message>.label{font-size:19px!important}.school-brand{font-size:21px!important}#leaders>.label{font-size:20px!important}main{padding-top:45px}.headrow{align-items:start;flex-direction:column}}
+
+/* Album section heading follows the site's standard section hierarchy. */
+.album-heading{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 0 18px;margin:0 0 20px;border-bottom:2px solid #cfdbeb}
+.album-heading h2{font:800 clamp(26px,3vw,32px)/1.25 Georgia,serif!important;color:#0b3d91!important;letter-spacing:0!important;margin:8px 0 0!important}
+.album-heading .label{margin:0;font:800 15px/1.4 Arial,sans-serif!important;color:#155fc1!important}
+.album-heading button{background:#e9f2ff;color:#0b3d91;border:1px solid #bfd3ee;font:700 16px/1.4 Arial,sans-serif;white-space:nowrap}
+#steam-album>p{font:400 17px/1.6 Arial,sans-serif;color:#506886;margin:0 0 24px}
+@media(max-width:600px){.album-heading{align-items:flex-start;flex-wrap:wrap;gap:16px}}
