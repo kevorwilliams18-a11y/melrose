@@ -322,7 +322,6 @@
   const days = document.querySelector('#days');
   const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
   const fullDate = date => date.toLocaleDateString('en', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  const readableEventDate = key => { const [y,m,d]=key.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}); };
   function render(direction = 0) {
     document.querySelector('#month').textContent = view.toLocaleDateString('en', { month: 'long', year: 'numeric' });
     document.querySelector('#selected-date').textContent = fullDate(selected);
@@ -341,23 +340,15 @@
     for (const event of matches) {
       const article = document.createElement('article');
       const title = document.createElement('h3'); title.textContent = event.title; article.append(title);
-      const note = document.createElement('p'); note.textContent = event.start === event.end ? 'Time not specified.' : readableEventDate(event.start) + ' – ' + readableEventDate(event.end) + ' · Time not specified.'; article.append(note); detail.append(article);
+      const note = document.createElement('p'); note.textContent = event.start === event.end ? 'Time not specified.' : event.start + ' to ' + event.end + ' · Time not specified.'; article.append(note); detail.append(article);
     }
     let agenda = document.querySelector('#month-events');
     if (!agenda) { agenda = document.createElement('section'); agenda.id = 'month-events'; document.querySelector('.calendar-layout').after(agenda); }
     agenda.replaceChildren();
-    const heading = document.createElement('h2'); heading.textContent = 'Events This Month'; agenda.append(heading);
+    const heading = document.createElement('h2'); heading.textContent = 'Events this month'; agenda.append(heading);
     const start = dateKey(view), end = dateKey(new Date(view.getFullYear(),view.getMonth()+1,0));
     const monthly = weekdayEvents.filter(event => event.start <= end && event.end >= start).sort((a,b)=>a.start.localeCompare(b.start));
-    const eventList = document.createElement('ul'); eventList.className = 'calendar-event-list';
-    for (const event of monthly) {
-      const item=document.createElement('li'), dates=document.createElement('div'), title=document.createElement('strong');
-      dates.className='calendar-event-date';
-      const startDate=document.createElement('time'); startDate.dateTime=event.start; startDate.textContent=readableEventDate(event.start); dates.append(startDate);
-      if(event.start!==event.end){const endDate=document.createElement('time');endDate.dateTime=event.end;endDate.textContent=readableEventDate(event.end);dates.append(document.createTextNode(' – '),endDate);}
-      title.className='calendar-event-title';title.textContent=event.title;item.append(dates,title);eventList.append(item);
-    }
-    if(monthly.length)agenda.append(eventList);
+    for (const event of monthly) { const p = document.createElement('p'); p.textContent = (event.start === event.end ? event.start : event.start + ' – ' + event.end) + ' · ' + event.title; agenda.append(p); }
     if (!monthly.length) { const p = document.createElement('p'); p.textContent = 'No events listed for this month.'; agenda.append(p); }
     days.replaceChildren();
     for (let blank = 0; blank < view.getDay(); blank++) {
