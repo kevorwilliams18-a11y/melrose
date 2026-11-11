@@ -54,16 +54,5 @@ main>h2,.school-section>h2,.purpose-title,.board-roster>h2{font:800 clamp(26px,3
 #steam-album>p{font:400 17px/1.6 Arial,sans-serif;color:#506886;margin:0 0 24px}
 @media(max-width:600px){.album-heading{align-items:flex-start;flex-wrap:wrap;gap:16px}}
 
-/* Calendar lists and headings match other school sections. */
-.term-summary h2,#month-events h2,.calendar-toolbar h2{font:800 clamp(26px,3vw,32px)/1.25 Georgia,serif!important;letter-spacing:0!important;color:#0b3d91!important;margin:0 0 20px!important}
-.calendar-toolbar h2{margin:0!important}
-.day-details h2{font:800 26px/1.3 Georgia,serif!important;letter-spacing:0!important;color:#0b3d91!important}
-.term-summary,#month-events{background:#fff;border:1px solid #cfdbeb;border-radius:14px;padding:28px 30px;margin:32px 0}
-.term-summary ul,.calendar-event-list{list-style:none;padding:0;margin:0}
-.term-summary li,.calendar-event-list li{display:grid;grid-template-columns:minmax(190px,.85fr) minmax(0,1.65fr);gap:16px;padding:17px 0;border-bottom:1px solid #cfdbeb;margin:0;font:400 18px/1.6 Arial,sans-serif}
-.term-summary li:last-child,.calendar-event-list li:last-child{border-bottom:0}
-.term-summary time,.calendar-event-date{font:700 17px/1.6 Arial,sans-serif;color:#0b3d91}
-.calendar-event-title{font:700 18px/1.6 Arial,sans-serif;color:#102a4c}
-.term-summary>p{font:400 16px/1.6 Arial,sans-serif;color:#506886;margin:18px 0 0}
-#month-events>p{font:400 18px/1.6 Arial,sans-serif}
-@media(max-width:600px){.term-summary,#month-events{padding:22px}.term-summary li,.calendar-event-list li{grid-template-columns:1fr;gap:5px}}
+/* Calendar heading colour. */
+.term-summary h2,#month-events h2,.calendar-toolbar h2,.day-details h2{color:#0b3d91!important}
