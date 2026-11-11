@@ -32,3 +32,5 @@ body.modern-home>main{width:100%;max-width:none;padding:0}.mw{width:min(1180px,c
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 .school-brand{display:flex;align-items:center}.school-brand small{display:block}.review-footer{display:grid}.review-footer a{display:block;margin:7px 0}.review-footer a.school-brand{display:flex}.footer-note{grid-column:1/-1;border-top:1px solid #ffffff25;padding-top:20px}.modern-home .actions{display:flex;flex-wrap:wrap;gap:12px}.modern-home .principal-photo{overflow:hidden}.modern-home .principal-photo img{height:auto}.modern-home .headrow h2{margin-bottom:0!important}
+
+.hero-art>img,.story-photos img{height:auto}
